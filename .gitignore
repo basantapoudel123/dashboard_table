@@ -1,0 +1,27 @@
+# dependencies
+node_modules
+
+# next build
+.next
+out
+
+# env files
+.env*
+!.env.example
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode
+.idea
+
+# build artifacts
+dist
+coverage
+
+# TypeScript
+*.tsbuildinfo
