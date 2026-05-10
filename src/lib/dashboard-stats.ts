@@ -61,8 +61,18 @@ export function buildCumulativeAcquisitionSeries(cars: Car[]) {
   return sorted.map((c, i) => ({
     label: formatShortDate(c.inStockSince),
     fullDate: c.inStockSince,
-    // cumulative: i + 1,
-    cumulative : c.promoRatePct
+
+    // graph value
+    cumulative: c.msrp,
+
+    // tooltip data
+    model: c.model,
+    modelYear: c.modelYear,
+    bodyStyle: c.bodyStyle,
+    isElectric: c.isElectric,
+    certifiedPreOwned: c.certifiedPreOwned,
+    promoRatePct: c.promoRatePct,
+    msrp: c.msrp,
   }))
 }
 

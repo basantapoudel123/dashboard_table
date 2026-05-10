@@ -20,7 +20,17 @@ const BRAND = "#2387d8"
 const BRAND_SOFT = "rgba(35, 135, 216, 0.12)"
 
 type Props = {
-  cumulative: { label: string; fullDate: string; cumulative: number }[]
+  cumulative: {
+    label: string; cumulative: number,
+    fullDate?: string
+    model?: string
+    modelYear?: number
+    bodyStyle?: string
+    isElectric?: boolean
+    certifiedPreOwned?: boolean
+    promoRatePct?: number
+    msrp?: number
+  }[]
   bodyStyles: BodyStyleDatum[]
 }
 
@@ -33,12 +43,17 @@ export function OverviewCharts({ cumulative, bodyStyles }: Props) {
       <div className="border-border/70 flex flex-col gap-3 rounded-2xl border bg-card/60 p-4 shadow-inner ring-1 ring-primary/[0.06] backdrop-blur-sm lg:col-span-3 dark:bg-card/40">
         <div>
           <h2 className="font-heading text-lg font-semibold tracking-tight">
-            Acquisition curve
+            Vehicle MSRP Trends
           </h2>
+
           <p className="text-muted-foreground text-xs leading-relaxed">
-            Cumulative vehicles on the lot by <code className="text-foreground/80">inStockSince</code>{" "}
-            order — driven by your mock inventory.{" "}
-            <span className="text-muted-foreground/90">Hover the chart for each exact date.</span>
+            MSRP distribution of vehicles based on{" "}
+            <code className="text-foreground/80">inStockSince</code> timeline data
+            from your inventory dataset.{" "}
+            <span className="text-muted-foreground/90">
+              Hover each point to explore detailed vehicle insights including pricing,
+              promo rate, body style, and electric status.
+            </span>
           </p>
         </div>
         <div className="text-muted-foreground h-[280px] w-full text-xs">
@@ -71,27 +86,68 @@ export function OverviewCharts({ cumulative, bodyStyles }: Props) {
                 dy={denseAcquisition ? 6 : 4}
               />
               <YAxis
-                width={28}
-                allowDecimals={false}
+                width={80}
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "currentColor", fontSize: 11 }}
+                tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
               />
               <Tooltip
                 contentStyle={{
-                  borderRadius: "12px",
-                  border: "1px solid color-mix(in srgb, var(--border) 80%, transparent)",
-                  background: "color-mix(in srgb, var(--card) 92%, transparent)",
-                  backdropFilter: "blur(8px)",
+                  borderRadius: "16px",
+                  border:
+                    "1px solid color-mix(in srgb, var(--border) 80%, transparent)",
+                  background:
+                    "color-mix(in srgb, var(--card) 92%, transparent)",
+                  backdropFilter: "blur(10px)",
                   fontSize: "12px",
+                  padding: "12px",
                 }}
+
                 labelFormatter={(_, payload) => {
                   const row = payload?.[0]?.payload as
-                    | { fullDate?: string }
+                    | {
+                      fullDate?: string
+                      model?: string
+                      modelYear?: number
+                      bodyStyle?: string
+                      isElectric?: boolean
+                      certifiedPreOwned?: boolean
+                      promoRatePct?: number
+                      msrp?: number
+                    }
                     | undefined
-                  return row?.fullDate ?? ""
+
+                  if (!row) return ""
+
+                  return (
+                    <div className="space-y-1 text-xs">
+                      <div className="text-sm font-semibold text-foreground">
+                        {row.model}
+                      </div>
+
+                      <div className="text-muted-foreground">
+                        Stock Since: {row.fullDate}
+                      </div>
+
+                      <div>
+                        Promo Rate: {row.promoRatePct}%
+                      </div>
+
+                      <div>
+                        Body Style: {row.bodyStyle}
+                      </div>
+
+                      <div>
+                        Electric: {row.isElectric ? "Yes" : "No"}
+                      </div>
+                    </div>
+                  )
                 }}
-                formatter={(value) => [`${value ?? ""} units`, "On lot"]}
+                formatter={(value) => [
+                  `$${Number(value).toLocaleString()}`,
+                  "MSRP",
+                ]}
               />
               <Area
                 type="monotone"
@@ -99,8 +155,17 @@ export function OverviewCharts({ cumulative, bodyStyles }: Props) {
                 stroke={BRAND}
                 strokeWidth={2.5}
                 fill={`url(#${fillId})`}
-                dot={denseAcquisition ? false : { r: 3, fill: BRAND, strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: BRAND, stroke: "#fff", strokeWidth: 2 }}
+                dot={
+                  denseAcquisition
+                    ? false
+                    : { r: 3, fill: BRAND, strokeWidth: 0 }
+                }
+                activeDot={{
+                  r: 5,
+                  fill: BRAND,
+                  stroke: "#fff",
+                  strokeWidth: 2,
+                }}
               />
             </AreaChart>
           </ResponsiveContainer>
