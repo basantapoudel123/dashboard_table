@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import type {
   ColumnFiltersState,
   PaginationState,
@@ -14,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import * as React from "react"
 
 import { Table } from "@/components/ui/table"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -134,6 +134,12 @@ export function EditableDataTable<TRow extends Record<string, unknown>>(
     setPaginationInternal((p) => ({ ...p, pageSize }))
   }, [pageSize, controlledPagination])
 
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const {
     editTarget,
     fieldErrors,
@@ -220,7 +226,10 @@ export function EditableDataTable<TRow extends Record<string, unknown>>(
               "w-full table-fixed",
               table.getState().columnSizingInfo.isResizingColumn && "select-none"
             )}
-            style={{ width: `max(100%, ${table.getTotalSize()}px)` }}
+            style={
+              mounted
+                ? { width: `max(100%, ${table.getTotalSize()}px)` }
+                : undefined}
           >
             <EditableDataTableHeader table={table} />
             <EditableDataTableBody
