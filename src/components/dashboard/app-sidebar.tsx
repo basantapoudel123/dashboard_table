@@ -1,7 +1,6 @@
 "use client"
 
 import { CarFrontIcon, LayoutDashboardIcon, Table2Icon } from "lucide-react"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import {
@@ -18,6 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboardIcon },
@@ -26,6 +26,7 @@ const NAV = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { setOpenMobile, isMobile } = useSidebar()
 
 
@@ -62,17 +63,12 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
-                      render={
-                        <Link
-                          href={item.href}
-                          prefetch
-                          onClick={() => {
-                            if (isMobile) {
-                              setOpenMobile(false)
-                            }
-                          }}
-                        />
-                      }
+                      onClick={() => {
+                        router.push(item.href)
+                        if (isMobile) {
+                          setTimeout(() => setOpenMobile(false), 50)
+                        }
+                      }}
                       isActive={active}
                       className={cn(active && "font-medium")}
                     >
